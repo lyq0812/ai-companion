@@ -1,0 +1,44 @@
+# 获取 GitHub Personal Access Token 步骤
+
+## 1. 打开 GitHub Token 页面
+
+在浏览器中访问：
+```
+https://github.com/settings/tokens
+```
+
+## 2. 登录 GitHub 账号
+
+如果还没登录，输入您的 GitHub 用户名和密码登录。
+
+## 3. 生成新 Token
+
+1. 点击 **"Generate new token (classic)"** 按钮
+   - 如果看不到这个按钮，先点击 **"Tokens (classic)"** 标签
+
+2. 填写信息：
+   - **Note**: 输入一个描述，比如 "Deploy Token"
+   - **Expiration**: 选择 "No expiration"（永不过期）
+   - **Select scopes**: 勾选 **"repo"**（必须，这是仓库访问权限）
+
+3. 点击 **"Generate token"** 按钮
+
+## 4. 复制 Token
+
+- 生成后，会显示一个长字符串，这就是您的 Token
+- **重要**：Token 只会显示一次，一定要复制保存好！
+- 看起来像这样：`ghp_abcdefghijklmnopqrstuvwxyz1234567890`
+
+## 5. 使用 Token
+
+当 git 命令提示输入密码时：
+- **Username**: 输入您的 GitHub 用户名（lyq0812）
+- **Password**: 输入刚才复制的 Token（不是登录密码！）
+
+## 注意事项
+
+- Token 相当于您的密码，不要告诉任何人
+- 建议使用记事本保存 Token，下次需要时可以直接粘贴
+- 如果 Token 泄露，立即在 GitHub 上撤销并重新生成
+
+获取到 Token 后，运行 `GitHub自动上传.bat` 脚本，输入 Token 即可自动推送代码！
