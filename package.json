@@ -1,0 +1,30 @@
+{
+  "name": "ai-companion-platform",
+  "version": "1.0.0",
+  "description": "AI数字人陪伴平台 - 温馨治愈的情感陪伴工具",
+  "main": "index.js",
+  "scripts": {
+    "dev": "npm run dev:h5",
+    "dev:h5": "cd frontend && npm run dev:h5",
+    "dev:mp-weixin": "cd frontend && npm run dev:mp-weixin",
+    "dev:app": "cd frontend && npm run dev:app",
+    "build": "npm run build:h5",
+    "build:h5": "cd frontend && npm run build:h5",
+    "build:mp-weixin": "cd frontend && npm run build:mp-weixin",
+    "server": "cd backend && npm run dev",
+    "server:prod": "cd backend && npm start",
+    "install:all": "npm install && cd frontend && npm install && cd ../backend && npm install"
+  },
+  "keywords": [
+    "AI",
+    "数字人",
+    "情感陪伴",
+    "uni-app",
+    "Vue3"
+  ],
+  "author": "AI Companion Team",
+  "license": "MIT",
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}

@@ -1,0 +1,29 @@
+services:
+  - type: web
+    name: ai-companion-backend
+    env: node
+    buildCommand: cd backend && npm install
+    startCommand: cd backend && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: MONGODB_URI
+        fromDatabase:
+          name: ai-companion-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: WECHAT_APPID
+        sync: false
+      - key: WECHAT_SECRET
+        sync: false
+      - key: AI_API_KEY
+        sync: false
+
+databases:
+  - name: ai-companion-db
+    databaseName: ai_companion
+    user: ai_companion_user
+    plan: free
