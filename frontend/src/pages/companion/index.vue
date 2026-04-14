@@ -1,67 +1,65 @@
 <template>
-  <view class="companion-page">
+  <div class="companion-page">
     <!-- 场景区域 -->
-    <view class="scene-container" @click="onSceneClick">
-      <image 
+    <div class="scene-container" @click="onSceneClick">
+      <img 
         class="scene-bg" 
         :src="companion?.sceneImage || '/static/default-scene.jpg'" 
-        mode="aspectFill"
       />
       
       <!-- 数字人角色 -->
-      <view 
+      <div 
         class="avatar-container"
         :style="avatarStyle"
         @click.stop="onAvatarClick"
       >
-        <view class="avatar-wrapper" :class="{ 'is-talking': isTalking }">
-          <image 
+        <div class="avatar-wrapper" :class="{ 'is-talking': isTalking }">
+          <img 
             class="avatar-image" 
             :src="companion?.avatar || '/static/default-avatar.jpg'" 
-            mode="aspectFill"
           />
-          <view class="avatar-glow" v-if="isTalking"></view>
-        </view>
+          <div class="avatar-glow" v-if="isTalking"></div>
+        </div>
         
         <!-- 气泡对话框 -->
-        <view class="speech-bubble" v-if="currentSpeech">
-          <text class="speech-text">{{ currentSpeech }}</text>
-        </view>
-      </view>
+        <div class="speech-bubble" v-if="currentSpeech">
+          <span class="speech-text">{{ currentSpeech }}</span>
+        </div>
+      </div>
       
       <!-- 快捷操作按钮 -->
-      <view class="scene-actions">
-        <view class="action-btn" @click.stop="toggleAnimation">
-          <text class="action-icon">{{ isMoving ? '⏸️' : '▶️' }}</text>
-        </view>
-        <view class="action-btn" @click.stop="triggerGreeting">
-          <text class="action-icon">👋</text>
-        </view>
-        <view class="action-btn" @click.stop="goToChat">
-          <text class="action-icon">💬</text>
-        </view>
-      </view>
-    </view>
+      <div class="scene-actions">
+        <div class="action-btn" @click.stop="toggleAnimation">
+          <span class="action-icon">{{ isMoving ? '⏸️' : '▶️' }}</span>
+        </div>
+        <div class="action-btn" @click.stop="triggerGreeting">
+          <span class="action-icon">👋</span>
+        </div>
+        <div class="action-btn" @click.stop="goToChat">
+          <span class="action-icon">💬</span>
+        </div>
+      </div>
+    </div>
     
     <!-- 底部信息栏 -->
-    <view class="info-bar">
-      <view class="companion-info">
-        <text class="companion-name">{{ companion?.name || '数字人' }}</text>
-        <text class="companion-status">{{ statusText }}</text>
-      </view>
+    <div class="info-bar">
+      <div class="companion-info">
+        <span class="companion-name">{{ companion?.name || '数字人' }}</span>
+        <span class="companion-status">{{ statusText }}</span>
+      </div>
       <button class="chat-btn" @click="goToChat">
-        <text>开始聊天</text>
+        开始聊天
       </button>
-    </view>
-  </view>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { onShow } from '@dcloudio/uni-app'
+import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
-import { request } from '@/utils/request'
 
+const router = useRouter()
 const userStore = useUserStore()
 const companion = computed(() => userStore.currentCompanion)
 
@@ -194,9 +192,7 @@ const onAvatarClick = () => {
 
 // 跳转到聊天
 const goToChat = () => {
-  uni.navigateTo({
-    url: '/pages/chat/index'
-  })
+  router.push('/chat')
 }
 
 // 初始化
@@ -208,7 +204,7 @@ onMounted(() => {
     }, 1000)
     
     // 随机说话定时器
-    animationTimer = setInterval(() => {
+    animationTimer = window.setInterval(() => {
       if (Math.random() > 0.7) { // 30%概率说话
         randomSpeech()
       }
@@ -222,14 +218,6 @@ onUnmounted(() => {
   }
   if (speechTimer) {
     clearTimeout(speechTimer)
-  }
-})
-
-onShow(() => {
-  // 页面显示时恢复动画
-  if (companion.value && !isMoving.value) {
-    isMoving.value = true
-    randomMove()
   }
 })
 </script>
@@ -254,6 +242,7 @@ onShow(() => {
   position: absolute;
   top: 0;
   left: 0;
+  object-fit: cover;
 }
 
 .avatar-container {
@@ -264,12 +253,12 @@ onShow(() => {
 
 .avatar-wrapper {
   position: relative;
-  width: 160rpx;
-  height: 160rpx;
-  border-radius: 80rpx;
+  width: 80px;
+  height: 80px;
+  border-radius: 40px;
   overflow: hidden;
-  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.15);
-  border: 4rpx solid rgba(255, 255, 255, 0.8);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  border: 2px solid rgba(255, 255, 255, 0.8);
 }
 
 .avatar-image {
@@ -280,12 +269,12 @@ onShow(() => {
 
 .avatar-glow {
   position: absolute;
-  top: -10rpx;
-  left: -10rpx;
-  right: -10rpx;
-  bottom: -10rpx;
-  border-radius: 90rpx;
-  border: 4rpx solid rgba(102, 126, 234, 0.6);
+  top: -5px;
+  left: -5px;
+  right: -5px;
+  bottom: -5px;
+  border-radius: 45px;
+  border: 2px solid rgba(102, 126, 234, 0.6);
   animation: pulse 1.5s ease-in-out infinite;
 }
 
@@ -305,13 +294,13 @@ onShow(() => {
   bottom: 100%;
   left: 50%;
   transform: translateX(-50%);
-  margin-bottom: 20rpx;
+  margin-bottom: 10px;
   background: #fff;
-  padding: 20rpx 32rpx;
-  border-radius: 24rpx;
-  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.1);
-  min-width: 200rpx;
-  max-width: 400rpx;
+  padding: 10px 16px;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  min-width: 100px;
+  max-width: 200px;
   animation: fadeInUp 0.3s ease;
 }
 
@@ -321,12 +310,12 @@ onShow(() => {
   top: 100%;
   left: 50%;
   transform: translateX(-50%);
-  border: 16rpx solid transparent;
+  border: 8px solid transparent;
   border-top-color: #fff;
 }
 
 .speech-text {
-  font-size: 28rpx;
+  font-size: 14px;
   color: #333;
   line-height: 1.4;
 }
@@ -334,7 +323,7 @@ onShow(() => {
 @keyframes fadeInUp {
   from {
     opacity: 0;
-    transform: translateX(-50%) translateY(10rpx);
+    transform: translateX(-50%) translateY(5px);
   }
   to {
     opacity: 1;
@@ -344,36 +333,37 @@ onShow(() => {
 
 .scene-actions {
   position: absolute;
-  top: 40rpx;
-  right: 40rpx;
+  top: 20px;
+  right: 20px;
   display: flex;
   flex-direction: column;
-  gap: 20rpx;
+  gap: 10px;
   z-index: 20;
 }
 
 .action-btn {
-  width: 80rpx;
-  height: 80rpx;
+  width: 40px;
+  height: 40px;
   background: rgba(255, 255, 255, 0.95);
-  border-radius: 40rpx;
+  border-radius: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
 }
 
 .action-icon {
-  font-size: 36rpx;
+  font-size: 18px;
 }
 
 .info-bar {
   background: #fff;
-  padding: 32rpx 40rpx;
+  padding: 16px 20px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  box-shadow: 0 -4rpx 20rpx rgba(0, 0, 0, 0.05);
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
 }
 
 .companion-info {
@@ -382,24 +372,30 @@ onShow(() => {
 }
 
 .companion-name {
-  font-size: 36rpx;
+  font-size: 18px;
   font-weight: bold;
   color: #333;
-  margin-bottom: 8rpx;
+  margin-bottom: 4px;
 }
 
 .companion-status {
-  font-size: 24rpx;
+  font-size: 12px;
   color: #999;
 }
 
 .chat-btn {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: #fff;
-  padding: 24rpx 48rpx;
-  border-radius: 40rpx;
-  font-size: 30rpx;
+  padding: 12px 24px;
+  border-radius: 20px;
+  font-size: 15px;
   font-weight: 500;
   border: none;
+  cursor: pointer;
+  transition: opacity 0.3s;
+}
+
+.chat-btn:hover {
+  opacity: 0.9;
 }
 </style>

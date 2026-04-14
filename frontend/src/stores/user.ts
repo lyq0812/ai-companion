@@ -50,17 +50,17 @@ export const useUserStore = defineStore('user', () => {
   // Actions
   const setToken = (newToken: string) => {
     token.value = newToken
-    uni.setStorageSync('token', newToken)
+    localStorage.setItem('token', newToken)
   }
 
   const setUserInfo = (info: UserInfo) => {
     userInfo.value = info
-    uni.setStorageSync('userInfo', JSON.stringify(info))
+    localStorage.setItem('userInfo', JSON.stringify(info))
   }
 
   const initUserInfo = () => {
-    const storedToken = uni.getStorageSync('token')
-    const storedUserInfo = uni.getStorageSync('userInfo')
+    const storedToken = localStorage.getItem('token')
+    const storedUserInfo = localStorage.getItem('userInfo')
     
     if (storedToken) {
       token.value = storedToken
@@ -80,8 +80,8 @@ export const useUserStore = defineStore('user', () => {
     userInfo.value = null
     companions.value = []
     currentCompanion.value = null
-    uni.removeStorageSync('token')
-    uni.removeStorageSync('userInfo')
+    localStorage.removeItem('token')
+    localStorage.removeItem('userInfo')
   }
 
   const setCompanions = (list: Companion[]) => {
@@ -91,9 +91,9 @@ export const useUserStore = defineStore('user', () => {
   const setCurrentCompanion = (companion: Companion | null) => {
     currentCompanion.value = companion
     if (companion) {
-      uni.setStorageSync('currentCompanionId', companion.id)
+      localStorage.setItem('currentCompanionId', companion.id)
     } else {
-      uni.removeStorageSync('currentCompanionId')
+      localStorage.removeItem('currentCompanionId')
     }
   }
 
@@ -116,7 +116,7 @@ export const useUserStore = defineStore('user', () => {
       userInfo.value.isVip = isVipStatus
       userInfo.value.vipExpireTime = expireTime
       userInfo.value.vipType = type
-      uni.setStorageSync('userInfo', JSON.stringify(userInfo.value))
+      localStorage.setItem('userInfo', JSON.stringify(userInfo.value))
     }
   }
 

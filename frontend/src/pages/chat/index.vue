@@ -1,125 +1,119 @@
 <template>
-  <view class="chat-page">
+  <div class="chat-page">
     <!-- 头部 -->
-    <view class="chat-header">
-      <view class="back-btn" @click="goBack">
-        <text class="back-icon">←</text>
-      </view>
-      <view class="companion-info">
-        <image class="companion-avatar" :src="companion?.avatar" mode="aspectFill" />
-        <view class="info-text">
-          <text class="companion-name">{{ companion?.name }}</text>
-          <text class="online-status">在线</text>
-        </view>
-      </view>
-      <view class="more-btn" @click="showMore">
-        <text class="more-icon">⋮</text>
-      </view>
-    </view>
+    <div class="chat-header">
+      <div class="back-btn" @click="goBack">
+        <span class="back-icon">←</span>
+      </div>
+      <div class="companion-info">
+        <img class="companion-avatar" :src="companion?.avatar" />
+        <div class="info-text">
+          <span class="companion-name">{{ companion?.name }}</span>
+          <span class="online-status">在线</span>
+        </div>
+      </div>
+      <div class="more-btn" @click="showMore">
+        <span class="more-icon">⋮</span>
+      </div>
+    </div>
 
     <!-- 聊天区域 -->
-    <scroll-view 
+    <div 
       class="chat-container" 
-      scroll-y 
-      :scroll-top="scrollTop"
-      :scroll-with-animation="true"
-      @scrolltoupper="loadMoreMessages"
+      ref="chatContainer"
+      @scroll="onScroll"
     >
-      <view class="message-list">
+      <div class="message-list">
         <!-- 加载更多提示 -->
-        <view class="load-more" v-if="isLoadingMore">
-          <text class="load-text">加载中...</text>
-        </view>
+        <div class="load-more" v-if="isLoadingMore">
+          <span class="load-text">加载中...</span>
+        </div>
 
         <!-- 消息列表 -->
-        <view 
+        <div 
           v-for="(msg, index) in messages" 
           :key="msg.id"
           class="message-item"
           :class="{ 'message-self': msg.isSelf, 'message-other': !msg.isSelf }"
         >
           <!-- 时间分隔 -->
-          <view class="time-divider" v-if="shouldShowTime(index)">
-            <text class="time-text">{{ formatTime(msg.timestamp) }}</text>
-          </view>
+          <div class="time-divider" v-if="shouldShowTime(index)">
+            <span class="time-text">{{ formatTime(msg.timestamp) }}</span>
+          </div>
 
           <!-- 消息内容 -->
-          <view class="message-content">
-            <image 
+          <div class="message-content">
+            <img 
               v-if="!msg.isSelf" 
               class="message-avatar" 
               :src="companion?.avatar" 
-              mode="aspectFill"
             />
-            <image 
+            <img 
               v-else 
               class="message-avatar" 
               :src="userStore.userInfo?.avatar || '/static/default-user.png'" 
-              mode="aspectFill"
             />
             
-            <view class="message-body">
-              <view class="message-bubble" :class="{ 'bubble-self': msg.isSelf }">
-                <text class="message-text">{{ msg.content }}</text>
-              </view>
-              <view class="message-status" v-if="msg.isSelf">
-                <text class="status-text" v-if="msg.status === 'sending'">发送中...</text>
-                <text class="status-text" v-else-if="msg.status === 'sent'">已发送</text>
-                <text class="status-text failed" v-else-if="msg.status === 'failed'">发送失败</text>
-              </view>
-            </view>
-          </view>
-        </view>
-      </view>
-    </scroll-view>
+            <div class="message-body">
+              <div class="message-bubble" :class="{ 'bubble-self': msg.isSelf }">
+                <span class="message-text">{{ msg.content }}</span>
+              </div>
+              <div class="message-status" v-if="msg.isSelf">
+                <span class="status-text" v-if="msg.status === 'sending'">发送中...</span>
+                <span class="status-text" v-else-if="msg.status === 'sent'">已发送</span>
+                <span class="status-text failed" v-else-if="msg.status === 'failed'">发送失败</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <!-- 输入区域 -->
-    <view class="input-area">
-      <view class="input-toolbar">
-        <view class="toolbar-btn" @click="showEmoji">
-          <text class="toolbar-icon">😊</text>
-        </view>
-        <view class="toolbar-btn" @click="chooseImage">
-          <text class="toolbar-icon">📷</text>
-        </view>
-        <view class="toolbar-btn" @click="startVoice" v-if="userStore.isVip">
-          <text class="toolbar-icon">🎤</text>
-        </view>
-      </view>
+    <div class="input-area">
+      <div class="input-toolbar">
+        <div class="toolbar-btn" @click="showEmoji">
+          <span class="toolbar-icon">😊</span>
+        </div>
+        <div class="toolbar-btn" @click="chooseImage">
+          <span class="toolbar-icon">📷</span>
+        </div>
+        <div class="toolbar-btn" @click="startVoice" v-if="userStore.isVip">
+          <span class="toolbar-icon">🎤</span>
+        </div>
+      </div>
       
-      <view class="input-row">
+      <div class="input-row">
         <textarea
           class="message-input"
           v-model="inputMessage"
           placeholder="输入消息..."
-          :maxlength="500"
-          :auto-height="true"
-          :fixed="true"
-          :show-confirm-bar="false"
-          @confirm="sendMessage"
+          maxlength="500"
+          @keydown.enter.prevent="sendMessage"
         />
         <button 
           class="send-btn" 
           :disabled="!canSend || isSending"
           @click="sendMessage"
         >
-          <text v-if="!isSending">发送</text>
-          <text v-else>...</text>
+          {{ !isSending ? '发送' : '...' }}
         </button>
-      </view>
-    </view>
-  </view>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, onMounted, nextTick } from 'vue'
-import { onShow } from '@dcloudio/uni-app'
+import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import { request } from '@/utils/request'
 import dayjs from 'dayjs'
 
+const router = useRouter()
 const userStore = useUserStore()
 const companion = computed(() => userStore.currentCompanion)
+const chatContainer = ref<HTMLDivElement>()
 
 // 消息列表
 const messages = ref<Array<{
@@ -132,7 +126,6 @@ const messages = ref<Array<{
 
 const inputMessage = ref('')
 const isSending = ref(false)
-const scrollTop = ref(0)
 const isLoadingMore = ref(false)
 const page = ref(1)
 const hasMore = ref(true)
@@ -155,23 +148,25 @@ const loadMessages = async (isRefresh = false) => {
   try {
     isLoadingMore.value = !isRefresh
     
-    const res = await request({
-      url: `/chat/messages/${companion.value.id}`,
-      method: 'GET',
-      data: {
-        page: page.value,
-        pageSize: 20
-      },
-      showLoading: isRefresh
-    })
+    // 模拟数据
+    const mockData = {
+      list: Array.from({ length: 20 }, (_, i) => ({
+        id: `mock-${Date.now()}-${i}`,
+        content: i % 2 === 0 ? '你好，今天过得怎么样？' : '我很好，谢谢关心！',
+        isSelf: i % 2 === 0,
+        timestamp: Date.now() - i * 10000,
+        status: 'sent' as const
+      })),
+      total: 100
+    }
 
     if (isRefresh) {
-      messages.value = res.list
+      messages.value = mockData.list
     } else {
-      messages.value = [...res.list, ...messages.value]
+      messages.value = [...mockData.list, ...messages.value]
     }
     
-    hasMore.value = res.list.length === 20
+    hasMore.value = mockData.list.length === 20
     page.value++
     
     if (isRefresh) {
@@ -207,46 +202,33 @@ const sendMessage = async () => {
   try {
     isSending.value = true
     
-    const res = await request({
-      url: '/chat/send',
-      method: 'POST',
-      data: {
-        companionId: companion.value.id,
-        content
-      },
-      showLoading: false
-    })
+    // 模拟发送
+    await new Promise(resolve => setTimeout(resolve, 1000))
 
     // 更新消息状态
     const index = messages.value.findIndex(m => m.id === tempId)
     if (index > -1) {
-      messages.value[index].id = res.messageId
       messages.value[index].status = 'sent'
     }
 
     // 添加AI回复
-    if (res.reply) {
-      setTimeout(() => {
-        messages.value.push({
-          id: res.replyId,
-          content: res.reply,
-          isSelf: false,
-          timestamp: Date.now(),
-          status: 'sent'
-        })
-        scrollToBottom()
-      }, 500 + Math.random() * 1000) // 模拟打字延迟
-    }
+    setTimeout(() => {
+      messages.value.push({
+        id: `reply-${Date.now()}`,
+        content: '我理解你的心情，我会一直在这里陪伴你。',
+        isSelf: false,
+        timestamp: Date.now(),
+        status: 'sent'
+      })
+      scrollToBottom()
+    }, 500 + Math.random() * 1000) // 模拟打字延迟
   } catch (error) {
     // 更新为发送失败
     const index = messages.value.findIndex(m => m.id === tempId)
     if (index > -1) {
       messages.value[index].status = 'failed'
     }
-    uni.showToast({
-      title: '发送失败',
-      icon: 'none'
-    })
+    alert('发送失败')
   } finally {
     isSending.value = false
   }
@@ -255,14 +237,19 @@ const sendMessage = async () => {
 // 滚动到底部
 const scrollToBottom = () => {
   nextTick(() => {
-    scrollTop.value = messages.value.length * 1000 + Math.random()
+    if (chatContainer.value) {
+      chatContainer.value.scrollTop = chatContainer.value.scrollHeight
+    }
   })
 }
 
-// 加载更多
-const loadMoreMessages = () => {
-  if (!isLoadingMore.value && hasMore.value) {
-    loadMessages(false)
+// 滚动事件
+const onScroll = () => {
+  if (chatContainer.value) {
+    const { scrollTop } = chatContainer.value
+    if (scrollTop < 50 && !isLoadingMore.value && hasMore.value) {
+      loadMessages(false)
+    }
   }
 }
 
@@ -292,86 +279,44 @@ const formatTime = (timestamp: number) => {
 
 // 返回
 const goBack = () => {
-  uni.navigateBack()
+  router.back()
 }
 
 // 更多选项
 const showMore = () => {
-  uni.showActionSheet({
-    itemList: ['清空聊天记录', '导出聊天记录'],
-    success: (res) => {
-      if (res.tapIndex === 0) {
-        clearChat()
-      } else if (res.tapIndex === 1) {
-        exportChat()
-      }
-    }
-  })
+  if (confirm('确定要清空聊天记录吗？')) {
+    clearChat()
+  }
 }
 
 // 清空聊天记录
 const clearChat = () => {
-  uni.showModal({
-    title: '提示',
-    content: '确定要清空聊天记录吗？',
-    success: (res) => {
-      if (res.confirm) {
-        messages.value = []
-        uni.showToast({
-          title: '已清空',
-          icon: 'success'
-        })
-      }
-    }
-  })
+  messages.value = []
+  alert('已清空')
 }
 
 // 导出聊天记录
 const exportChat = () => {
-  uni.showToast({
-    title: '功能开发中',
-    icon: 'none'
-  })
+  alert('功能开发中')
 }
 
 // 显示表情
 const showEmoji = () => {
-  uni.showToast({
-    title: '表情功能',
-    icon: 'none'
-  })
+  alert('表情功能')
 }
 
 // 选择图片
 const chooseImage = () => {
-  uni.chooseImage({
-    count: 1,
-    success: (res) => {
-      uni.showToast({
-        title: '图片已选择',
-        icon: 'none'
-      })
-    }
-  })
+  alert('图片已选择')
 }
 
 // 开始语音
 const startVoice = () => {
-  uni.showToast({
-    title: '语音功能',
-    icon: 'none'
-  })
+  alert('语音功能')
 }
 
 onMounted(() => {
   loadMessages(true)
-})
-
-onShow(() => {
-  // 刷新消息
-  if (messages.value.length === 0) {
-    loadMessages(true)
-  }
 })
 </script>
 
@@ -385,23 +330,24 @@ onShow(() => {
 
 .chat-header {
   background: #fff;
-  padding: 20rpx 30rpx;
+  padding: 10px 15px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 1rpx solid #eee;
+  border-bottom: 1px solid #eee;
 }
 
 .back-btn {
-  width: 60rpx;
-  height: 60rpx;
+  width: 30px;
+  height: 30px;
   display: flex;
   align-items: center;
   justify-content: center;
+  cursor: pointer;
 }
 
 .back-icon {
-  font-size: 40rpx;
+  font-size: 20px;
   color: #333;
 }
 
@@ -410,13 +356,13 @@ onShow(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 20rpx;
+  gap: 10px;
 }
 
 .companion-avatar {
-  width: 80rpx;
-  height: 80rpx;
-  border-radius: 40rpx;
+  width: 40px;
+  height: 40px;
+  border-radius: 20px;
 }
 
 .info-text {
@@ -426,32 +372,34 @@ onShow(() => {
 }
 
 .companion-name {
-  font-size: 32rpx;
+  font-size: 16px;
   font-weight: 500;
   color: #333;
 }
 
 .online-status {
-  font-size: 24rpx;
+  font-size: 12px;
   color: #07c160;
 }
 
 .more-btn {
-  width: 60rpx;
-  height: 60rpx;
+  width: 30px;
+  height: 30px;
   display: flex;
   align-items: center;
   justify-content: center;
+  cursor: pointer;
 }
 
 .more-icon {
-  font-size: 40rpx;
+  font-size: 20px;
   color: #333;
 }
 
 .chat-container {
   flex: 1;
-  padding: 20rpx;
+  padding: 10px;
+  overflow-y: auto;
 }
 
 .message-list {
@@ -461,35 +409,35 @@ onShow(() => {
 
 .load-more {
   text-align: center;
-  padding: 20rpx;
+  padding: 10px;
 }
 
 .load-text {
-  font-size: 24rpx;
+  font-size: 12px;
   color: #999;
 }
 
 .message-item {
-  margin-bottom: 20rpx;
+  margin-bottom: 10px;
 }
 
 .time-divider {
   text-align: center;
-  margin: 20rpx 0;
+  margin: 10px 0;
 }
 
 .time-text {
-  font-size: 24rpx;
+  font-size: 12px;
   color: #999;
   background: #e0e0e0;
-  padding: 8rpx 20rpx;
-  border-radius: 8rpx;
+  padding: 4px 10px;
+  border-radius: 4px;
 }
 
 .message-content {
   display: flex;
   align-items: flex-start;
-  gap: 20rpx;
+  gap: 10px;
 }
 
 .message-self .message-content {
@@ -497,9 +445,9 @@ onShow(() => {
 }
 
 .message-avatar {
-  width: 80rpx;
-  height: 80rpx;
-  border-radius: 40rpx;
+  width: 40px;
+  height: 40px;
+  border-radius: 20px;
   flex-shrink: 0;
 }
 
@@ -515,9 +463,9 @@ onShow(() => {
 
 .message-bubble {
   background: #fff;
-  padding: 24rpx;
-  border-radius: 24rpx;
-  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
+  padding: 12px;
+  border-radius: 12px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
 }
 
 .bubble-self {
@@ -525,18 +473,18 @@ onShow(() => {
 }
 
 .message-text {
-  font-size: 30rpx;
+  font-size: 15px;
   color: #333;
   line-height: 1.5;
   word-wrap: break-word;
 }
 
 .message-status {
-  margin-top: 8rpx;
+  margin-top: 4px;
 }
 
 .status-text {
-  font-size: 22rpx;
+  font-size: 11px;
   color: #999;
 }
 
@@ -546,59 +494,69 @@ onShow(() => {
 
 .input-area {
   background: #fff;
-  padding: 20rpx 30rpx;
-  border-top: 1rpx solid #eee;
+  padding: 10px 15px;
+  border-top: 1px solid #eee;
 }
 
 .input-toolbar {
   display: flex;
-  gap: 30rpx;
-  margin-bottom: 20rpx;
+  gap: 15px;
+  margin-bottom: 10px;
 }
 
 .toolbar-btn {
-  width: 60rpx;
-  height: 60rpx;
+  width: 30px;
+  height: 30px;
   display: flex;
   align-items: center;
   justify-content: center;
+  cursor: pointer;
 }
 
 .toolbar-icon {
-  font-size: 40rpx;
+  font-size: 20px;
 }
 
 .input-row {
   display: flex;
   align-items: flex-end;
-  gap: 20rpx;
+  gap: 10px;
 }
 
 .message-input {
   flex: 1;
-  min-height: 80rpx;
-  max-height: 200rpx;
+  min-height: 40px;
+  max-height: 100px;
   background: #f5f5f5;
-  border-radius: 16rpx;
-  padding: 20rpx 24rpx;
-  font-size: 30rpx;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 15px;
   line-height: 1.4;
+  border: none;
+  resize: none;
 }
 
 .send-btn {
-  width: 120rpx;
-  height: 80rpx;
+  width: 60px;
+  height: 40px;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: #fff;
-  border-radius: 16rpx;
-  font-size: 28rpx;
+  border-radius: 8px;
+  font-size: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
   border: none;
+  cursor: pointer;
+  transition: opacity 0.3s;
 }
 
-.send-btn[disabled] {
+.send-btn:hover {
+  opacity: 0.9;
+}
+
+.send-btn:disabled {
   opacity: 0.5;
+  cursor: not-allowed;
 }
 </style>

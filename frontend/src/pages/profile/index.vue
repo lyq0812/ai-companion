@@ -1,81 +1,83 @@
 <template>
-  <view class="profile-page">
+  <div class="profile-page">
     <!-- 用户信息卡片 -->
-    <view class="user-card">
-      <view class="user-info">
-        <image class="user-avatar" :src="userStore.userInfo?.avatar || '/static/default-avatar.png'" mode="aspectFill" />
-        <view class="user-detail">
-          <text class="user-name">{{ userStore.userInfo?.nickname || '用户' }}</text>
-          <text class="user-phone">{{ maskedPhone }}</text>
-        </view>
-      </view>
-      <view class="vip-tag" v-if="userStore.isVip" @click="goToVip">
-        <text class="vip-text">{{ vipTypeText }}</text>
-      </view>
-      <view class="vip-tag free" v-else @click="goToVip">
-        <text class="vip-text">开通会员</text>
-      </view>
-    </view>
+    <div class="user-card">
+      <div class="user-info">
+        <img class="user-avatar" :src="userStore.userInfo?.avatar || 'https://via.placeholder.com/100'" />
+        <div class="user-detail">
+          <span class="user-name">{{ userStore.userInfo?.nickname || '用户' }}</span>
+          <span class="user-phone">{{ maskedPhone }}</span>
+        </div>
+      </div>
+      <div class="vip-tag" v-if="userStore.isVip" @click="goToVip">
+        <span class="vip-text">{{ vipTypeText }}</span>
+      </div>
+      <div class="vip-tag free" v-else @click="goToVip">
+        <span class="vip-text">开通会员</span>
+      </div>
+    </div>
 
     <!-- 功能列表 -->
-    <view class="menu-list">
-      <view class="menu-item" @click="goToCompanions">
-        <view class="menu-icon-wrapper">
-          <text class="menu-icon">👥</text>
-        </view>
-        <text class="menu-text">我的数字人</text>
-        <text class="menu-arrow">›</text>
-      </view>
-      <view class="menu-item" @click="goToMemories">
-        <view class="menu-icon-wrapper">
-          <text class="menu-icon">📖</text>
-        </view>
-        <text class="menu-text">回忆馆</text>
-        <text class="menu-arrow">›</text>
-      </view>
-      <view class="menu-item" @click="goToVip">
-        <view class="menu-icon-wrapper vip-wrapper">
-          <text class="menu-icon">👑</text>
-        </view>
-        <text class="menu-text">会员中心</text>
-        <text class="menu-arrow">›</text>
-      </view>
-    </view>
+    <div class="menu-list">
+      <div class="menu-item" @click="goToCompanions">
+        <div class="menu-icon-wrapper">
+          <span class="menu-icon">👥</span>
+        </div>
+        <span class="menu-text">我的数字人</span>
+        <span class="menu-arrow">›</span>
+      </div>
+      <div class="menu-item" @click="goToMemories">
+        <div class="menu-icon-wrapper">
+          <span class="menu-icon">📖</span>
+        </div>
+        <span class="menu-text">回忆馆</span>
+        <span class="menu-arrow">›</span>
+      </div>
+      <div class="menu-item" @click="goToVip">
+        <div class="menu-icon-wrapper vip-wrapper">
+          <span class="menu-icon">👑</span>
+        </div>
+        <span class="menu-text">会员中心</span>
+        <span class="menu-arrow">›</span>
+      </div>
+    </div>
 
     <!-- 设置列表 -->
-    <view class="menu-list">
-      <view class="menu-item" @click="goToSettings">
-        <view class="menu-icon-wrapper">
-          <text class="menu-icon">⚙️</text>
-        </view>
-        <text class="menu-text">设置</text>
-        <text class="menu-arrow">›</text>
-      </view>
-      <view class="menu-item" @click="goToUserAgreement">
-        <view class="menu-icon-wrapper">
-          <text class="menu-icon">📄</text>
-        </view>
-        <text class="menu-text">用户协议</text>
-        <text class="menu-arrow">›</text>
-      </view>
-      <view class="menu-item" @click="goToPrivacy">
-        <view class="menu-icon-wrapper">
-          <text class="menu-icon">🔒</text>
-        </view>
-        <text class="menu-text">隐私政策</text>
-        <text class="menu-arrow">›</text>
-      </view>
-    </view>
+    <div class="menu-list">
+      <div class="menu-item" @click="goToSettings">
+        <div class="menu-icon-wrapper">
+          <span class="menu-icon">⚙️</span>
+        </div>
+        <span class="menu-text">设置</span>
+        <span class="menu-arrow">›</span>
+      </div>
+      <div class="menu-item" @click="goToUserAgreement">
+        <div class="menu-icon-wrapper">
+          <span class="menu-icon">📄</span>
+        </div>
+        <span class="menu-text">用户协议</span>
+        <span class="menu-arrow">›</span>
+      </div>
+      <div class="menu-item" @click="goToPrivacy">
+        <div class="menu-icon-wrapper">
+          <span class="menu-icon">🔒</span>
+        </div>
+        <span class="menu-text">隐私政策</span>
+        <span class="menu-arrow">›</span>
+      </div>
+    </div>
 
     <!-- 退出登录 -->
     <button class="logout-btn" @click="handleLogout">退出登录</button>
-  </view>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 
+const router = useRouter()
 const userStore = useUserStore()
 
 const maskedPhone = computed(() => {
@@ -95,43 +97,37 @@ const vipTypeText = computed(() => {
 })
 
 const goToCompanions = () => {
-  uni.navigateTo({ url: '/pages/profile/companions' })
+  router.push('/profile/companions')
 }
 
 const goToMemories = () => {
-  uni.navigateTo({ url: '/pages/profile/memories' })
+  router.push('/profile/memories')
 }
 
 const goToVip = () => {
-  uni.navigateTo({ url: '/pages/profile/vip' })
+  router.push('/profile/vip')
 }
 
 const goToSettings = () => {
-  uni.navigateTo({ url: '/pages/profile/settings' })
+  router.push('/profile/settings')
 }
 
 const goToUserAgreement = () => {
-  uni.navigateTo({ url: '/pages/agreement/user' })
+  router.push('/agreement/user')
 }
 
 const goToPrivacy = () => {
-  uni.navigateTo({ url: '/pages/agreement/privacy' })
+  router.push('/agreement/privacy')
 }
 
 const handleLogout = () => {
-  uni.showModal({
-    title: '提示',
-    content: '确定要退出登录吗？',
-    success: (res) => {
-      if (res.confirm) {
-        userStore.logout()
-        uni.showToast({ title: '已退出登录', icon: 'success' })
-        setTimeout(() => {
-          uni.reLaunch({ url: '/pages/index/index' })
-        }, 1500)
-      }
-    }
-  })
+  if (confirm('确定要退出登录吗？')) {
+    userStore.logout()
+    alert('已退出登录')
+    setTimeout(() => {
+      router.push('/index')
+    }, 1500)
+  }
 }
 </script>
 
@@ -139,31 +135,32 @@ const handleLogout = () => {
 .profile-page {
   min-height: 100vh;
   background: #f5f7fa;
-  padding: 40rpx;
+  padding: 20px;
   box-sizing: border-box;
 }
 
 .user-card {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-radius: 32rpx;
-  padding: 48rpx;
+  border-radius: 16px;
+  padding: 24px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 40rpx;
+  margin-bottom: 20px;
 }
 
 .user-info {
   display: flex;
   align-items: center;
-  gap: 24rpx;
+  gap: 12px;
 }
 
 .user-avatar {
-  width: 120rpx;
-  height: 120rpx;
-  border-radius: 60rpx;
-  border: 4rpx solid rgba(255, 255, 255, 0.3);
+  width: 60px;
+  height: 60px;
+  border-radius: 30px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  object-fit: cover;
 }
 
 .user-detail {
@@ -172,21 +169,27 @@ const handleLogout = () => {
 }
 
 .user-name {
-  font-size: 36rpx;
+  font-size: 18px;
   font-weight: bold;
   color: #fff;
-  margin-bottom: 8rpx;
+  margin-bottom: 4px;
 }
 
 .user-phone {
-  font-size: 26rpx;
+  font-size: 13px;
   color: rgba(255, 255, 255, 0.8);
 }
 
 .vip-tag {
   background: linear-gradient(135deg, #ffd700 0%, #ffb700 100%);
-  padding: 12rpx 28rpx;
-  border-radius: 30rpx;
+  padding: 6px 14px;
+  border-radius: 15px;
+  cursor: pointer;
+  transition: opacity 0.3s;
+}
+
+.vip-tag:hover {
+  opacity: 0.9;
 }
 
 .vip-tag.free {
@@ -194,23 +197,30 @@ const handleLogout = () => {
 }
 
 .vip-text {
-  font-size: 24rpx;
+  font-size: 12px;
   font-weight: bold;
   color: #fff;
 }
 
 .menu-list {
   background: #fff;
-  border-radius: 24rpx;
-  margin-bottom: 40rpx;
+  border-radius: 12px;
+  margin-bottom: 20px;
   overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
 .menu-item {
   display: flex;
   align-items: center;
-  padding: 32rpx;
-  border-bottom: 1rpx solid #f5f5f5;
+  padding: 16px;
+  border-bottom: 1px solid #f5f5f5;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.menu-item:hover {
+  background-color: #f9f9f9;
 }
 
 .menu-item:last-child {
@@ -218,14 +228,14 @@ const handleLogout = () => {
 }
 
 .menu-icon-wrapper {
-  width: 64rpx;
-  height: 64rpx;
+  width: 32px;
+  height: 32px;
   background: #f5f7fa;
-  border-radius: 16rpx;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-right: 24rpx;
+  margin-right: 12px;
 }
 
 .menu-icon-wrapper.vip-wrapper {
@@ -233,29 +243,35 @@ const handleLogout = () => {
 }
 
 .menu-icon {
-  font-size: 36rpx;
+  font-size: 18px;
 }
 
 .menu-text {
   flex: 1;
-  font-size: 30rpx;
+  font-size: 15px;
   color: #333;
 }
 
 .menu-arrow {
-  font-size: 36rpx;
+  font-size: 18px;
   color: #999;
 }
 
 .logout-btn {
   width: 100%;
-  height: 96rpx;
-  line-height: 96rpx;
+  height: 48px;
   background: #fff;
   color: #ff4d4f;
-  font-size: 32rpx;
-  border-radius: 48rpx;
+  font-size: 16px;
+  border-radius: 24px;
   border: none;
-  margin-top: 40rpx;
+  margin-top: 20px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.logout-btn:hover {
+  background-color: #f9f9f9;
 }
 </style>

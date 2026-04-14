@@ -32,6 +32,11 @@
         </p>
         <button @click="checkConnection" class="btn">检测连接</button>
       </div>
+      
+      <div class="action-buttons">
+        <router-link to="/index" class="btn">进入平台</router-link>
+        <router-link to="/login" class="btn btn-secondary">登录</router-link>
+      </div>
     </main>
   </div>
 </template>

@@ -1,74 +1,82 @@
 <template>
-  <view class="vip-page">
-    <view class="vip-header">
-      <text class="vip-title">会员中心</text>
-      <text class="vip-subtitle">解锁更多专属功能</text>
-    </view>
+  <div class="vip-page">
+    <div class="vip-header">
+      <span class="vip-title">会员中心</span>
+      <span class="vip-subtitle">解锁更多专属功能</span>
+    </div>
 
     <!-- 会员状态 -->
-    <view class="vip-status-card" :class="{ 'is-vip': userStore.isVip }">
-      <view class="status-content">
-        <text class="status-title">{{ userStore.isVip ? '您已是会员' : '开通会员' }}</text>
-        <text class="status-desc" v-if="userStore.isVip">有效期至 {{ userStore.vipExpireDate }}</text>
-        <text class="status-desc" v-else>享受完整陪伴体验</text>
-      </view>
-      <view class="vip-badge-large" v-if="userStore.isVip">
-        <text>VIP</text>
-      </view>
-    </view>
+    <div class="vip-status-card" :class="{ 'is-vip': userStore.isVip }">
+      <div class="status-content">
+        <span class="status-title">{{ userStore.isVip ? '您已是会员' : '开通会员' }}</span>
+        <span class="status-desc" v-if="userStore.isVip">有效期至 {{ userStore.vipExpireDate }}</span>
+        <span class="status-desc" v-else>享受完整陪伴体验</span>
+      </div>
+      <div class="vip-badge-large" v-if="userStore.isVip">
+        <span>VIP</span>
+      </div>
+    </div>
 
     <!-- 会员套餐 -->
-    <view class="vip-plans" v-if="!userStore.isVip">
-      <view 
+    <div class="vip-plans" v-if="!userStore.isVip">
+      <div 
         class="plan-card" 
         v-for="plan in plans" 
         :key="plan.type"
         :class="{ active: selectedPlan === plan.type }"
         @click="selectedPlan = plan.type"
       >
-        <view class="plan-header">
-          <text class="plan-name">{{ plan.name }}</text>
-          <view class="plan-badge" v-if="plan.badge">{{ plan.badge }}</view>
-        </view>
-        <view class="plan-price">
-          <text class="price-symbol">¥</text>
-          <text class="price-num">{{ plan.price }}</text>
-          <text class="price-unit">/{{ plan.unit }}</text>
-        </view>
-        <view class="plan-features">
-          <text class="feature-item" v-for="feature in plan.features" :key="feature">{{ feature }}</text>
-        </view>
-      </view>
-    </view>
+        <div class="plan-header">
+          <span class="plan-name">{{ plan.name }}</span>
+          <div class="plan-badge" v-if="plan.badge">{{ plan.badge }}</div>
+        </div>
+        <div class="plan-price">
+          <span class="price-symbol">¥</span>
+          <span class="price-num">{{ plan.price }}</span>
+          <span class="price-unit">/{{ plan.unit }}</span>
+        </div>
+        <div class="plan-features">
+          <span class="feature-item" v-for="feature in plan.features" :key="feature">{{ feature }}</span>
+        </div>
+      </div>
+    </div>
 
     <!-- 会员权益 -->
-    <view class="vip-benefits">
-      <text class="benefits-title">会员权益</text>
-      <view class="benefits-grid">
-        <view class="benefit-item" v-for="benefit in benefits" :key="benefit.icon">
-          <text class="benefit-icon">{{ benefit.icon }}</text>
-          <text class="benefit-name">{{ benefit.name }}</text>
-          <text class="benefit-desc">{{ benefit.desc }}</text>
-        </view>
-      </view>
-    </view>
+    <div class="vip-benefits">
+      <span class="benefits-title">会员权益</span>
+      <div class="benefits-grid">
+        <div class="benefit-item" v-for="benefit in benefits" :key="benefit.icon">
+          <span class="benefit-icon">{{ benefit.icon }}</span>
+          <span class="benefit-name">{{ benefit.name }}</span>
+          <span class="benefit-desc">{{ benefit.desc }}</span>
+        </div>
+      </div>
+    </div>
 
     <!-- 开通按钮 -->
     <button class="btn-primary pay-btn" v-if="!userStore.isVip" @click="handlePay">
       立即开通 ¥{{ currentPlan.price }}
     </button>
-  </view>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { useUserStore } from '@/stores/user'
-import { request } from '@/utils/request'
 
 const userStore = useUserStore()
-const selectedPlan = ref('year')
+const selectedPlan = ref<'month' | 'year' | 'family'>('year')
 
-const plans = [
+interface Plan {
+  type: 'month' | 'year' | 'family'
+  name: string
+  price: number
+  unit: string
+  badge: string
+  features: string[]
+}
+
+const plans: Plan[] = [
   {
     type: 'month',
     name: '月卡',
@@ -110,30 +118,18 @@ const currentPlan = computed(() => {
 
 const handlePay = async () => {
   try {
-    const res = await request({
-      url: '/payment/create-order',
-      method: 'POST',
-      data: {
-        planType: selectedPlan.value,
-        amount: currentPlan.value.price
-      }
-    })
-
-    // 调用微信支付
-    uni.requestPayment({
-      provider: 'wxpay',
-      orderInfo: res.paymentParams,
-      success: () => {
-        uni.showToast({ title: '支付成功', icon: 'success' })
-        // 更新会员状态
-        userStore.updateVipStatus(true, res.expireTime, selectedPlan.value as any)
-      },
-      fail: () => {
-        uni.showToast({ title: '支付取消', icon: 'none' })
-      }
-    })
+    // 模拟支付
+    alert('支付功能暂未实现')
+    // 模拟支付成功
+    setTimeout(() => {
+      alert('支付成功')
+      // 更新会员状态
+      const expireTime = new Date()
+      expireTime.setFullYear(expireTime.getFullYear() + 1)
+      userStore.updateVipStatus(true, expireTime.toISOString(), selectedPlan.value)
+    }, 1000)
   } catch (error) {
-    uni.showToast({ title: '支付失败', icon: 'none' })
+    alert('支付失败')
   }
 }
 </script>
@@ -142,36 +138,36 @@ const handlePay = async () => {
 .vip-page {
   min-height: 100vh;
   background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
-  padding: 40rpx;
+  padding: 20px;
   box-sizing: border-box;
 }
 
 .vip-header {
   text-align: center;
-  margin-bottom: 40rpx;
+  margin-bottom: 20px;
 }
 
 .vip-title {
   display: block;
-  font-size: 40rpx;
+  font-size: 20px;
   font-weight: bold;
   color: #ffd700;
-  margin-bottom: 12rpx;
+  margin-bottom: 6px;
 }
 
 .vip-subtitle {
-  font-size: 26rpx;
+  font-size: 13px;
   color: rgba(255, 255, 255, 0.6);
 }
 
 .vip-status-card {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-radius: 24rpx;
-  padding: 40rpx;
+  border-radius: 12px;
+  padding: 20px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 40rpx;
+  margin-bottom: 20px;
 }
 
 .vip-status-card.is-vip {
@@ -180,40 +176,46 @@ const handlePay = async () => {
 
 .status-title {
   display: block;
-  font-size: 36rpx;
+  font-size: 18px;
   font-weight: bold;
   color: #fff;
-  margin-bottom: 12rpx;
+  margin-bottom: 6px;
 }
 
 .status-desc {
-  font-size: 26rpx;
+  font-size: 13px;
   color: rgba(255, 255, 255, 0.8);
 }
 
 .vip-badge-large {
-  width: 100rpx;
-  height: 100rpx;
+  width: 50px;
+  height: 50px;
   background: rgba(255, 255, 255, 0.2);
-  border-radius: 50rpx;
+  border-radius: 25px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 32rpx;
+  font-size: 16px;
   font-weight: bold;
   color: #fff;
 }
 
 .vip-plans {
-  margin-bottom: 40rpx;
+  margin-bottom: 20px;
 }
 
 .plan-card {
   background: rgba(255, 255, 255, 0.05);
-  border-radius: 24rpx;
-  padding: 32rpx;
-  margin-bottom: 24rpx;
-  border: 2rpx solid transparent;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 12px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.plan-card:hover {
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .plan-card.active {
@@ -224,12 +226,12 @@ const handlePay = async () => {
 .plan-header {
   display: flex;
   align-items: center;
-  gap: 16rpx;
-  margin-bottom: 20rpx;
+  gap: 8px;
+  margin-bottom: 10px;
 }
 
 .plan-name {
-  font-size: 32rpx;
+  font-size: 16px;
   font-weight: bold;
   color: #fff;
 }
@@ -237,82 +239,87 @@ const handlePay = async () => {
 .plan-badge {
   background: #ff4d4f;
   color: #fff;
-  font-size: 20rpx;
-  padding: 4rpx 12rpx;
-  border-radius: 8rpx;
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 4px;
 }
 
 .plan-price {
-  margin-bottom: 20rpx;
+  margin-bottom: 10px;
 }
 
 .price-symbol {
-  font-size: 28rpx;
+  font-size: 14px;
   color: #ffd700;
 }
 
 .price-num {
-  font-size: 56rpx;
+  font-size: 28px;
   font-weight: bold;
   color: #ffd700;
 }
 
 .price-unit {
-  font-size: 24rpx;
+  font-size: 12px;
   color: rgba(255, 255, 255, 0.6);
 }
 
 .plan-features {
   display: flex;
   flex-direction: column;
-  gap: 12rpx;
+  gap: 6px;
 }
 
 .feature-item {
-  font-size: 26rpx;
+  font-size: 13px;
   color: rgba(255, 255, 255, 0.8);
 }
 
 .vip-benefits {
-  margin-bottom: 40rpx;
+  margin-bottom: 20px;
 }
 
 .benefits-title {
   display: block;
-  font-size: 32rpx;
+  font-size: 16px;
   font-weight: bold;
   color: #fff;
-  margin-bottom: 24rpx;
+  margin-bottom: 12px;
 }
 
 .benefits-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 20rpx;
+  gap: 10px;
 }
 
 .benefit-item {
   background: rgba(255, 255, 255, 0.05);
-  border-radius: 16rpx;
-  padding: 24rpx;
+  border-radius: 8px;
+  padding: 12px;
   text-align: center;
+  transition: background-color 0.3s;
+}
+
+.benefit-item:hover {
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .benefit-icon {
   display: block;
-  font-size: 40rpx;
-  margin-bottom: 12rpx;
+  font-size: 20px;
+  margin-bottom: 6px;
 }
 
 .benefit-name {
   display: block;
-  font-size: 24rpx;
+  font-size: 12px;
   color: #fff;
-  margin-bottom: 8rpx;
+  margin-bottom: 4px;
 }
 
 .benefit-desc {
-  font-size: 20rpx;
+  font-size: 10px;
   color: rgba(255, 255, 255, 0.5);
 }
 
@@ -321,5 +328,19 @@ const handlePay = async () => {
   background: linear-gradient(135deg, #ffd700 0%, #ffb700 100%);
   color: #333;
   font-weight: bold;
+  cursor: pointer;
+  transition: opacity 0.3s;
+}
+
+.pay-btn:hover {
+  opacity: 0.9;
+}
+
+.btn-primary {
+  border: none;
+  padding: 12px 40px;
+  border-radius: 25px;
+  font-size: 16px;
+  transition: opacity 0.3s;
 }
 </style>
