@@ -1,0 +1,3 @@
+<view class="container">
+  <web-view src="https://lyq0812.github.io/ai-companion/" bindmessage="onMessage" bindload="onLoad" binderror="onError"></web-view>
+</view>
