@@ -8,25 +8,7 @@
     "navigationBarTextStyle": "black",
     "backgroundColor": "#f7f3e9"
   },
-  "tabBar": {
-    "color": "#666",
-    "selectedColor": "#c53030",
-    "backgroundColor": "#f7f3e9",
-    "list": [
-      {
-        "pagePath": "pages/index/index",
-        "text": "首页",
-        "iconPath": "images/home.png",
-        "selectedIconPath": "images/home-active.png"
-      },
-      {
-        "pagePath": "pages/index/index",
-        "text": "我的",
-        "iconPath": "images/profile.png",
-        "selectedIconPath": "images/profile-active.png"
-      }
-    ]
-  },
+
   "networkTimeout": {
     "request": 10000,
     "downloadFile": 10000
