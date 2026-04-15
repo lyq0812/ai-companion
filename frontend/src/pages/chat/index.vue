@@ -12,8 +12,13 @@
           <span class="online-status">在线</span>
         </div>
       </div>
-      <div class="more-btn" @click="showMore">
-        <span class="more-icon">⋮</span>
+      <div class="header-tools">
+        <div class="toolbar-btn" @click="togglePrivacy" :class="{ 'active': isPrivacyMode }">
+          <span class="toolbar-icon">🔒</span>
+        </div>
+        <div class="toolbar-btn" @click="showMore">
+          <span class="toolbar-icon">⋮</span>
+        </div>
       </div>
     </div>
 
@@ -23,7 +28,15 @@
       ref="chatContainer"
       @scroll="onScroll"
     >
-      <div class="message-list">
+      <!-- 欢迎语 -->
+      <div class="welcome-message" v-if="messages.length === 0">
+        <div class="welcome-content">
+          <div class="welcome-text">式微已就位，愿长夜有伴，心事有归</div>
+          <div class="welcome-subtext">想说的话，都可以告诉我</div>
+        </div>
+      </div>
+
+      <div class="message-list" v-else>
         <!-- 加载更多提示 -->
         <div class="load-more" v-if="isLoadingMore">
           <span class="load-text">加载中...</span>
@@ -43,16 +56,18 @@
 
           <!-- 消息内容 -->
           <div class="message-content">
-            <img 
-              v-if="!msg.isSelf" 
-              class="message-avatar" 
-              :src="companion?.avatar" 
-            />
-            <img 
-              v-else 
-              class="message-avatar" 
-              :src="userStore.userInfo?.avatar || '/static/default-user.png'" 
-            />
+            <div v-if="!msg.isSelf" class="message-avatar-container">
+              <img 
+                class="message-avatar" 
+                :src="companion?.avatar" 
+              />
+            </div>
+            <div v-else class="message-avatar-container">
+              <img 
+                class="message-avatar" 
+                :src="userStore.userInfo?.avatar || '/static/default-user.png'" 
+              />
+            </div>
             
             <div class="message-body">
               <div class="message-bubble" :class="{ 'bubble-self': msg.isSelf }">
@@ -78,8 +93,14 @@
         <div class="toolbar-btn" @click="chooseImage">
           <span class="toolbar-icon">📷</span>
         </div>
-        <div class="toolbar-btn" @click="startVoice" v-if="userStore.isVip">
+        <div class="toolbar-btn" @click="startVoice">
           <span class="toolbar-icon">🎤</span>
+        </div>
+        <div class="toolbar-btn" @click="showHistory">
+          <span class="toolbar-icon">📋</span>
+        </div>
+        <div class="toolbar-btn" @click="showSettings">
+          <span class="toolbar-icon">⚙️</span>
         </div>
       </div>
       
@@ -87,7 +108,7 @@
         <textarea
           class="message-input"
           v-model="inputMessage"
-          placeholder="输入消息..."
+          placeholder="想说的话，都可以告诉我"
           maxlength="500"
           @keydown.enter.prevent="sendMessage"
         />
@@ -99,6 +120,11 @@
           {{ !isSending ? '发送' : '...' }}
         </button>
       </div>
+    </div>
+
+    <!-- 隐私模式提示 -->
+    <div class="privacy-toast" v-if="isPrivacyMode">
+      <span class="privacy-text">隐私模式已开启</span>
     </div>
   </div>
 </template>
@@ -129,6 +155,7 @@ const isSending = ref(false)
 const isLoadingMore = ref(false)
 const page = ref(1)
 const hasMore = ref(true)
+const isPrivacyMode = ref(false)
 
 const canSend = computed(() => {
   return inputMessage.value.trim().length > 0
@@ -315,6 +342,21 @@ const startVoice = () => {
   alert('语音功能')
 }
 
+// 显示历史记录
+const showHistory = () => {
+  alert('历史记录功能')
+}
+
+// 显示设置
+const showSettings = () => {
+  alert('设置功能')
+}
+
+// 切换隐私模式
+const togglePrivacy = () => {
+  isPrivacyMode.value = !isPrivacyMode.value
+}
+
 onMounted(() => {
   loadMessages(true)
 })
@@ -323,32 +365,43 @@ onMounted(() => {
 <style scoped>
 .chat-page {
   min-height: 100vh;
-  background: #f5f5f5;
+  background: linear-gradient(135deg, #F7F3E3 0%, #E8E2D0 100%);
+  background-image: 
+    url('data:image/svg+xml,%3Csvg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"%3E%3Cpath d="M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z" fill="%234a6b6e" fill-opacity="0.05" fill-rule="evenodd"/%3E%3C/svg%3E'),
+    url('data:image/svg+xml,%3Csvg width="100%25" height="100%25" xmlns="http://www.w3.org/2000/svg"%3E%3Cdefs%3E%3Cpattern id="mountain" patternUnits="userSpaceOnUse" width="100" height="100"%3E%3Cpath d="M0,50 Q25,30 50,50 T100,50 L100,100 L0,100 Z" fill="%232C2C2C" fill-opacity="0.03"/%3E%3C/pattern%3E%3C/defs%3E%3Crect width="100%25" height="100%25" fill="url(%23mountain)"/%3E%3C/svg%3E');
   display: flex;
   flex-direction: column;
+  position: relative;
 }
 
 .chat-header {
-  background: #fff;
-  padding: 10px 15px;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 12px 16px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid rgba(74, 107, 110, 0.1);
+  backdrop-filter: blur(10px);
 }
 
 .back-btn {
-  width: 30px;
-  height: 30px;
+  width: 36px;
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.back-btn:hover {
+  background: rgba(74, 107, 110, 0.1);
 }
 
 .back-icon {
   font-size: 20px;
-  color: #333;
+  color: #2C2C2C;
 }
 
 .companion-info {
@@ -356,13 +409,15 @@ onMounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 12px;
 }
 
 .companion-avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 20px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 2px solid rgba(74, 107, 110, 0.2);
+  box-shadow: 0 2px 8px rgba(74, 107, 110, 0.1);
 }
 
 .info-text {
@@ -372,83 +427,158 @@ onMounted(() => {
 }
 
 .companion-name {
-  font-size: 16px;
-  font-weight: 500;
-  color: #333;
+  font-size: 18px;
+  font-weight: 600;
+  color: #2C2C2C;
+  font-family: 'Noto Sans SC', serif;
 }
 
 .online-status {
   font-size: 12px;
   color: #07c160;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
-.more-btn {
-  width: 30px;
-  height: 30px;
+.online-status::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  background: #07c160;
+  border-radius: 50%;
+}
+
+.header-tools {
+  display: flex;
+  gap: 8px;
+}
+
+.toolbar-btn {
+  width: 36px;
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  position: relative;
 }
 
-.more-icon {
-  font-size: 20px;
-  color: #333;
+.toolbar-btn:hover {
+  background: rgba(74, 107, 110, 0.1);
+}
+
+.toolbar-btn.active {
+  background: rgba(196, 69, 54, 0.1);
+  color: #C44536;
+}
+
+.toolbar-icon {
+  font-size: 18px;
+  color: #4A6B6E;
+}
+
+.toolbar-btn.active .toolbar-icon {
+  color: #C44536;
 }
 
 .chat-container {
   flex: 1;
-  padding: 10px;
+  padding: 20px;
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.welcome-message {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  animation: fadeIn 1s ease-in-out;
+}
+
+.welcome-content {
+  text-align: center;
+  max-width: 80%;
+}
+
+.welcome-text {
+  font-size: 20px;
+  font-weight: 600;
+  color: #4A6B6E;
+  margin-bottom: 12px;
+  font-family: 'Noto Sans SC', serif;
+}
+
+.welcome-subtext {
+  font-size: 14px;
+  color: #666;
+  line-height: 1.5;
 }
 
 .message-list {
   display: flex;
   flex-direction: column;
+  animation: fadeIn 0.5s ease-in-out;
 }
 
 .load-more {
   text-align: center;
-  padding: 10px;
+  padding: 12px;
+  margin-bottom: 10px;
 }
 
 .load-text {
   font-size: 12px;
   color: #999;
+  background: rgba(255, 255, 255, 0.7);
+  padding: 6px 16px;
+  border-radius: 16px;
 }
 
 .message-item {
-  margin-bottom: 10px;
+  margin-bottom: 16px;
+  animation: slideUp 0.3s ease-out;
 }
 
 .time-divider {
   text-align: center;
-  margin: 10px 0;
+  margin: 16px 0;
 }
 
 .time-text {
   font-size: 12px;
   color: #999;
-  background: #e0e0e0;
-  padding: 4px 10px;
-  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.7);
+  padding: 4px 12px;
+  border-radius: 12px;
 }
 
 .message-content {
   display: flex;
   align-items: flex-start;
-  gap: 10px;
+  gap: 12px;
 }
 
 .message-self .message-content {
   flex-direction: row-reverse;
 }
 
-.message-avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 20px;
+.message-avatar-container {
   flex-shrink: 0;
+  position: relative;
+}
+
+.message-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid rgba(74, 107, 110, 0.2);
+  box-shadow: 0 2px 4px rgba(74, 107, 110, 0.1);
 }
 
 .message-body {
@@ -462,101 +592,231 @@ onMounted(() => {
 }
 
 .message-bubble {
-  background: #fff;
-  padding: 12px;
-  border-radius: 12px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  background: rgba(255, 255, 255, 0.9);
+  padding: 14px 18px;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(74, 107, 110, 0.1);
+  position: relative;
+  backdrop-filter: blur(5px);
 }
 
-.bubble-self {
-  background: #95ec69;
+.message-bubble::before {
+  content: '';
+  position: absolute;
+  top: 16px;
+  left: -8px;
+  width: 0;
+  height: 0;
+  border-top: 8px solid transparent;
+  border-bottom: 8px solid transparent;
+  border-right: 8px solid rgba(255, 255, 255, 0.9);
+}
+
+.message-self .message-bubble {
+  background: rgba(74, 107, 110, 0.9);
+  color: white;
+}
+
+.message-self .message-bubble::before {
+  left: auto;
+  right: -8px;
+  border-right: none;
+  border-left: 8px solid rgba(74, 107, 110, 0.9);
 }
 
 .message-text {
-  font-size: 15px;
-  color: #333;
-  line-height: 1.5;
+  font-size: 16px;
+  line-height: 1.6;
   word-wrap: break-word;
 }
 
+.message-self .message-text {
+  color: white;
+}
+
 .message-status {
-  margin-top: 4px;
+  margin-top: 6px;
 }
 
 .status-text {
-  font-size: 11px;
+  font-size: 12px;
   color: #999;
 }
 
 .status-text.failed {
-  color: #ff4d4f;
+  color: #C44536;
 }
 
 .input-area {
-  background: #fff;
-  padding: 10px 15px;
-  border-top: 1px solid #eee;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 12px 16px;
+  border-top: 1px solid rgba(74, 107, 110, 0.1);
+  backdrop-filter: blur(10px);
 }
 
 .input-toolbar {
   display: flex;
-  gap: 15px;
-  margin-bottom: 10px;
-}
-
-.toolbar-btn {
-  width: 30px;
-  height: 30px;
-  display: flex;
-  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
   justify-content: center;
-  cursor: pointer;
-}
-
-.toolbar-icon {
-  font-size: 20px;
 }
 
 .input-row {
   display: flex;
   align-items: flex-end;
-  gap: 10px;
+  gap: 12px;
 }
 
 .message-input {
   flex: 1;
-  min-height: 40px;
-  max-height: 100px;
-  background: #f5f5f5;
-  border-radius: 8px;
-  padding: 10px 12px;
-  font-size: 15px;
+  min-height: 48px;
+  max-height: 120px;
+  background: rgba(247, 243, 227, 0.7);
+  border-radius: 24px;
+  padding: 14px 20px;
+  font-size: 16px;
   line-height: 1.4;
-  border: none;
+  border: 1px solid rgba(74, 107, 110, 0.2);
   resize: none;
+  transition: all 0.3s ease;
+  font-family: 'Noto Sans SC', serif;
+}
+
+.message-input:focus {
+  outline: none;
+  border-color: #4A6B6E;
+  box-shadow: 0 0 0 3px rgba(74, 107, 110, 0.1);
 }
 
 .send-btn {
-  width: 60px;
-  height: 40px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: #fff;
-  border-radius: 8px;
+  width: 56px;
+  height: 48px;
+  background: linear-gradient(135deg, #4A6B6E 0%, #2C2C2C 100%);
+  color: white;
+  border-radius: 50%;
   font-size: 14px;
+  font-weight: 600;
   display: flex;
   align-items: center;
   justify-content: center;
   border: none;
   cursor: pointer;
-  transition: opacity 0.3s;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(74, 107, 110, 0.2);
+}
+
+.send-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.6s;
+}
+
+.send-btn:hover::before {
+  left: 100%;
 }
 
 .send-btn:hover {
-  opacity: 0.9;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(74, 107, 110, 0.3);
 }
 
 .send-btn:disabled {
-  opacity: 0.5;
+  opacity: 0.6;
   cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.privacy-toast {
+  position: fixed;
+  top: 80px;
+  right: 20px;
+  background: rgba(196, 69, 54, 0.9);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 12px;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease-in-out;
+  backdrop-filter: blur(10px);
+}
+
+.privacy-text {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.privacy-text::before {
+  content: '🔒';
+  font-size: 14px;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 响应式设计 */
+@media (max-width: 480px) {
+  .chat-container {
+    padding: 16px;
+  }
+  
+  .companion-avatar {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .companion-name {
+    font-size: 16px;
+  }
+  
+  .message-avatar {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .message-bubble {
+    padding: 12px 16px;
+  }
+  
+  .message-text {
+    font-size: 15px;
+  }
+  
+  .message-input {
+    min-height: 44px;
+    padding: 12px 18px;
+  }
+  
+  .send-btn {
+    width: 48px;
+    height: 44px;
+  }
 }
 </style>
