@@ -30,7 +30,7 @@
         </div>
         
         <div class="bg-white bg-opacity-80 backdrop-blur-sm p-6 rounded-lg shadow-sm border border-shiwei-border transition-all hover:shadow-md">
-          <div class="text-2xl mb-3">�</div>
+          <div class="text-2xl mb-3">💬</div>
           <h3 class="text-lg font-semibold text-shiwei-ink mb-2 font-serif">自然对话</h3>
         </div>
         
