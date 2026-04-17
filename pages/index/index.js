@@ -1,6 +1,6 @@
 Page({
   data: {
-    webViewUrl: 'http://localhost:3002/ai-companion/'
+    webViewUrl: 'http://localhost:3000/ai-companion/'
   },
   
   onLoad: function() {
