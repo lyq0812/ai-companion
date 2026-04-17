@@ -1,6 +1,6 @@
 Page({
   data: {
-    webViewUrl: 'http://localhost:3000/ai-companion/'
+    webViewUrl: 'https://lyq0812.github.io/ai-companion/'
   },
   
   onLoad: function() {
