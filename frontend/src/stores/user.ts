@@ -6,6 +6,7 @@ interface UserInfo {
   nickname: string
   avatar: string
   phone: string
+  username?: string
   isVip: boolean
   vipExpireTime: string | null
   vipType: 'month' | 'year' | 'family' | null

@@ -188,6 +188,7 @@ const handleLogin = async () => {
         nickname: '测试用户',
         avatar: 'https://via.placeholder.com/100',
         phone: phone.value,
+        username: phone.value,
         isVip: false,
         vipExpireTime: null,
         vipType: null,
