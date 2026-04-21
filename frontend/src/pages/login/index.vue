@@ -218,6 +218,7 @@ const handlePasswordLogin = async () => {
         id: '1',
         nickname: '测试用户',
         avatar: 'https://via.placeholder.com/100',
+        phone: '',
         username: form.value.username,
         isVip: false,
         vipExpireTime: null,
